@@ -2,24 +2,31 @@
 // 
 
 
-function newPassword (){
+function newPassword() {
+    let length = "0";
+    let lengthInt = 0;
 
-    let length = prompt("Please indicate your desired password length with a numeric value between 8 and 128");
-    let lengthInt = parseInt(length);
+
+    function getLength() {
+        length = prompt("Please indicate your desired password length with a numeric value between 8 and 128");
+        lengthInt = parseInt(length);
+        if (isNaN(lengthInt)){
+            getLength();
+        }
+        else if ((lengthInt < 8) || (lengthInt > 128)){
+            getLength();
+        }
+        return lengthInt;
+    }
+    
+    lengthInt = getLength();
+    console.log(lengthInt);
     let includeLowercase = false;
     let includeUppercase = false;
     let includeNumeric = false;
     let includeSpecialCharacters = false;
 
-//      @@NaN values are continuing to make it through, need to fix
-
-    while ( (typeof(lengthInt) === NaN) || (lengthInt < 8) || (lengthInt > 128)) {
-        length = prompt("Please indicate your desired password length with a numeric value between 8 and 128");
-        lengthInt = parseInt(length);
-    }
-
 //Gather the character types to include, and validate that at least one is selected
-//      @@It looks like the do-not-include selections are being respected in the final password
     while (!(includeNumeric) && !(includeLowercase) && !(includeUppercase) && !(includeSpecialCharacters)){
         alert("You will need to select at least one character type to include in your password.")
         includeLowercase = confirm("Would you like to include lowercase characters? Cancel = No")
@@ -46,7 +53,6 @@ function newPassword (){
             for (var i = 0; i < possibleCharacters[3].length; i++){
                 availableCharacters = availableCharacters.concat(possibleCharacters[3][i]);
             }
-            
         }
         if (includeNumeric === true) {
             for (var i = 0; i < possibleCharacters[2].length; i++){
@@ -83,10 +89,5 @@ function newPassword (){
 
     showPassword();
     return;
-
 }
-
-
-
-
 
