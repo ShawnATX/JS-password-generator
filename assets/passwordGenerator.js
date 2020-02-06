@@ -1,14 +1,24 @@
 
 // 
 
+let generateBtn = document.querySelector("#generate");
+let passwordArea = document.querySelector("#password");
+
+
 
 function newPassword() {
+    //Removing focus from Generate button after click to prevent accidentally triggering it again before user has a chance to copy it.
+    generateBtn.blur();
     let length = "0";
     let lengthInt = 0;
 
-
+    //Collecting the desired length of the new password, with checks for NaN and length under 8 or over 128. Returns number of desired length.
     function getLength() {
         length = prompt("Please indicate your desired password length with a numeric value between 8 and 128");
+        //catch if user clicks 'Cancel' and ends password 
+        if (!(length)){
+            return 0;
+        }
         lengthInt = parseInt(length);
         if (isNaN(lengthInt)){
             getLength();
@@ -19,8 +29,11 @@ function newPassword() {
         return lengthInt;
     }
     
+//Prompts to collect password criteria.
     lengthInt = getLength();
-    console.log(lengthInt);
+    if (lengthInt === 0){
+        return;
+    }
     let includeLowercase = false;
     let includeUppercase = false;
     let includeNumeric = false;
@@ -35,7 +48,7 @@ function newPassword() {
         includeSpecialCharacters = confirm("Would you like to include  special characters? Cancel = No")
     }
 
-    //using a scoped function as this will not need to be used externally. Using a fixed array of arrays which contains all possible characters
+//Using a fixed array of arrays which contains all possible characters
     function processUserCriteria (lengthInt, includeLowercase, includeUppercase, includeNumeric, includeSpecialCharacters){
         let userPassword = "";
         let availableCharacters = "";
@@ -43,12 +56,12 @@ function newPassword() {
         //possibleCharacters[1] = upper case characters;
         //possibleCharacters[3] = numeric characters;
         //possibleCharacters[4] = special characters;
-        let possibleCharacters = [["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"], ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"], ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"], ["!", "@", "#", "$", "%", "^", "&", "*", ",", ".", "?", "~", "`"]];
+        let possibleCharacters = [["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"], ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"], ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"], ["!", "\"", "/", "@", "#", "$", "%", "^", "&", "*", ",", ".", "?", "~", "`", "(", ")", "+", "-", "_", "=", "[", "]", "{", "}", "|", ":", ";"]];
                                 
 
 
         // Would not be random character selection if we were to choose an array element, then choose a character in that sub-array. In this case I will build a string of possible characters and randomly select a single character from that string
-
+        //This block builds the string of available characters to build the password with, based on user input.
         if (includeSpecialCharacters === true) {
             for (var i = 0; i < possibleCharacters[3].length; i++){
                 availableCharacters = availableCharacters.concat(possibleCharacters[3][i]);
@@ -70,7 +83,6 @@ function newPassword() {
             }
         }
 
-
         //looping through the length of the desired password to add a single random character at a time.
         for (var i = 0; i < lengthInt; i++){
             nextCharacter = availableCharacters.charAt(Math.floor(Math.random()*availableCharacters.length+1));
@@ -79,15 +91,42 @@ function newPassword() {
         return userPassword;
     }
 
-
     //function which calls the processUserCriteria function directly and displays it in the browser.
     function showPassword() {
-        let passwordBox = document.getElementById("passwordDisplay");
-        passwordBox.innerHTML = processUserCriteria(lengthInt, includeLowercase, includeUppercase, includeNumeric, includeSpecialCharacters);
+        let passwordBox = document.querySelector("#password");
+        passwordBox.textContent = processUserCriteria(lengthInt, includeLowercase, includeUppercase, includeNumeric, includeSpecialCharacters);
       }  
 
-
+    //Execute function to generate new password, display it on the screen, and finally exit the main newPassword function
     showPassword();
+    
     return;
 }
 
+//Copy password to user system clipboard when the user clicks in the text box
+function copyToClipboard() {
+    let passwordArea = document.getElementById("password");
+    //check if password has been generated yet, if not simply do nothing.
+    if (!(passwordArea.innerHTML)){
+        alert("Click 'Generate Password' first")
+        return;
+    }
+
+    passwordArea.select();
+    document.execCommand("copy");
+    passwordArea.blur();
+    alertCopySuccess();
+    return;
+}
+
+function alertCopySuccess(){
+    alert("Password successfully copied to clipboard. Use Ctrl+V or Command+V to paste.");
+    return;
+}
+
+// // Add event listener to generate button
+generateBtn.addEventListener("click", newPassword);
+
+//Add event listener to text area for copy function
+passwordArea.addEventListener("click", copyToClipboard);
+//passswordArea.set
